@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- Mapper と xml のマッピング-->
+<mapper namespace="com.example.repository.UserMapper">
+
+<!-- マッピング定義(ユーザ)-->
+<resultMap type="com.example.domainUser.model.MUser" id="user">
+    <result column="user_id" property="userId"/>
+    <result column="password" property="password"/> 
+    <result column="user_name" property="userName"/>
+    <result column="birthday" property="birthday"/>
+    <result column="age" property="age"/>
+    <result column="gender" property="gender"/>
+    <result column="department_id" property="departmentId"/>
+    <result column="role" property="role"/>
+    <association property="department" resultMap="department"/>
+    <collection property="salaryList" resultMap="salary" columnPrefix="salary_"/>
+</resultMap>
+
+<!-- マッピング定義(部署) -->
+<resultMap type="com.example.domainUser.model.Department" id="department">
+    <id column="department_id" property="departmentId"/>
+    <result column="department_name" property="departmentName"/>
+</resultMap>
+
+<!-- マッピング定義(給与) -->
+<resultMap type="com.example.domainUser.model.Salary" id= "salary">
+    <id column="user_id" property="userId"/>
+    <id column="year_month" property="yearMonth"/>
+    <result column="salary" property="salary"/>
+</resultMap>
+
+    <!-- ユーザ１件登録 -->
+    <insert id="insertOne">
+        INSERT INTO m_user(
+        user_id,
+        password,
+        user_name,
+        birthday,
+        age,
+        gender,
+        department_id,
+        role
+    ) VALUES(
+        #{userId},
+        #{password},
+        #{userName},
+        #{birthday},
+        #{age},
+        #{gender},
+        #{departmentId},
+        #{role}
+    );
+    </insert>
+
+    <!-- ユーザ複数件取得 -->
+    <select id="findMany" resultType="MUser">
+        SELECT 
+            *
+        FROM
+            m_user
+        <where>
+            <if test = "userId != null">
+                user_id LIKE '%' || #{userId} || '%'
+            </if>
+            <if test = "userName != null">
+                AND user_name LIKE '%' || #{userName} || '%'
+            </if>
+        </where>
+    </select>
+
+    <!-- ユーザ１件検索 -->
+    <select id="findOne" resultMap="user">
+        SELECT
+            m_user.user_id,
+            m_user.password,
+            m_user.user_name,
+            m_user.birthday,
+            m_user.age,
+            m_user.gender,
+            m_department.department_id,
+            m_department.department_name,
+            t_salary.user_id AS salary_user_id,
+            t_salary.year_month AS salary_year_month,
+            t_salary.salary AS salary_salary
+        FROM
+            m_user
+        LEFT JOIN
+            m_department
+        ON
+            m_user.department_id = m_department.department_id
+        LEFT JOIN
+            t_salary
+        ON
+            m_user.user_id = t_salary.user_id
+        WHERE
+            m_user.user_id = #{userId}
+    </select>
+
+    <!-- ユーザ１件更新 -->
+    <update id = "updateOne">
+        UPDATE
+            m_user
+        SET
+            password = #{password},
+            user_name = #{userName}
+        WHERE
+            user_id = #{userId}
+    </update>
+
+    <!-- ユーザ１件削除 -->
+    <delete id = "deleteOne">
+        DELETE FROM
+            m_user
+        WHERE
+            user_id = #{userId}
+    </delete>
+
+    <!-- ログインユーザ情報取得 -->
+    <select id = "findLoginUser" resultType="MUser">
+        SELECT
+            *
+        FROM
+            m_user
+        WHERE
+            user_id = #{userId}
+    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>hello World</h1>
+    <form action="/hello" method="POST">
+        入力：<input type="text" name="text1">
+        <input type="submit" value="クリック">
+    </form>
+    <br>
+    <form action="/hello/db" method="POST">
+        従業員ID：<input type="text" name="text2" th:value="${text2_value}">
+        <input type="submit" value="クリック">
+    </form>
+    <form>
+        <div class="row">
+            <div class="col">
+              <input type="text" class="form-control" placeholder="First name" aria-label="First name">
+            </div>
+            <div class="col">
+              <input type="text" class="form-control" placeholder="Last name" aria-label="Last name">
+            </div>
+          </div>
+    </form>
+</body>
+</html>
